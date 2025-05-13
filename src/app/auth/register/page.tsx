@@ -1,33 +1,29 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { useRouter } from 'next/navigation'
 
 export default function RegisterPage() {
-  const router = useRouter()
-
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+  const router = useRouter()
 
-  const validatePassword = (pw: string) => {
-    const regex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[\W_]).{8,}$/
-    return regex.test(pw)
-  }
-
-  const handleRegister = async () => {
-    setError(null)
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setSuccess('')
 
     if (password !== confirmPassword) {
-      setError('Password dan konfirmasi tidak cocok.')
-      return
+      return setError('Password tidak cocok')
     }
 
-    if (!validatePassword(password)) {
-      setError('Password harus minimal 8 karakter, mengandung huruf, angka, dan karakter khusus.')
-      return
+    const isStrong = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/.test(password)
+    if (!isStrong) {
+      return setError('Password harus minimal 8 karakter, mengandung huruf, angka, dan simbol')
     }
 
     const { error } = await supabase.auth.signUp({
@@ -41,48 +37,44 @@ export default function RegisterPage() {
     if (error) {
       setError(error.message)
     } else {
-      router.push('/auth/verify-email')
+      setSuccess('Silakan cek email untuk verifikasi akun')
     }
   }
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-4 border rounded-lg shadow">
-      <h1 className="text-2xl font-bold mb-4">Buat Akun</h1>
-
-      <input
-        type="email"
-        className="w-full border p-2 rounded mb-2"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input
-        type="password"
-        className="w-full border p-2 rounded mb-2"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <input
-        type="password"
-        className="w-full border p-2 rounded mb-2"
-        placeholder="Konfirmasi Password"
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-      />
-
-      {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-
-      <button
-        onClick={handleRegister}
-        className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
-      >
-        Daftar
-      </button>
-
-      <p className="text-xs mt-2 text-gray-600">
-        Password minimal 8 karakter, harus mengandung huruf, angka, dan simbol.
-      </p>
-    </div>
+    <main className="min-h-screen flex items-center justify-center bg-gray-100">
+      <form onSubmit={handleRegister} className="bg-white p-6 rounded shadow-md w-full max-w-md">
+        <h2 className="text-xl font-semibold mb-4 text-center">Daftar</h2>
+        {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
+        {success && <p className="text-green-500 text-sm mb-3">{success}</p>}
+        <input
+          type="email"
+          placeholder="Email"
+          className="w-full mb-3 p-2 border rounded"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          className="w-full mb-3 p-2 border rounded"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Konfirmasi Password"
+          className="w-full mb-4 p-2 border rounded"
+          value={confirmPassword}
+          onChange={e => setConfirmPassword(e.target.value)}
+          required
+        />
+        <button type="submit" className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700">
+          Daftar
+        </button>
+      </form>
+    </main>
   )
 }
