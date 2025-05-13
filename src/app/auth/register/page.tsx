@@ -1,87 +1,36 @@
 'use client'
 
 import { useState } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { supabase } from '@/lib/supabase'
 
 export default function RegisterPage() {
-  const supabase = createClientComponentClient()
-
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [successMessage, setSuccessMessage] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState('')
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-    setSuccessMessage('')
-
+  const handleRegister = async () => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: `${location.origin}/auth/callback`
+      }
     })
 
     if (error) {
-      setError(error.message)
+      setMessage(error.message)
     } else {
-      setSuccessMessage(
-        'Link verifikasi telah dikirim ke email kamu. Silakan cek inbox untuk mengaktifkan akun.'
-      )
+      setMessage('Cek email kamu untuk verifikasi.')
     }
-
-    setLoading(false)
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="w-full max-w-md bg-white p-6 rounded shadow">
-        <h2 className="text-2xl font-bold mb-6 text-center">Daftar Akun</h2>
-
-        {successMessage && (
-          <p className="text-green-600 text-sm text-center mb-4">
-            {successMessage}
-          </p>
-        )}
-
-        {error && (
-          <p className="text-red-600 text-sm text-center mb-4">{error}</p>
-        )}
-
-        <form onSubmit={handleRegister} className="space-y-4">
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full border px-4 py-2 rounded"
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password (min. 6 karakter)"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full border px-4 py-2 rounded"
-            required
-          />
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-            disabled={loading}
-          >
-            {loading ? 'Mendaftarkan...' : 'Daftar'}
-          </button>
-        </form>
-
-        <p className="text-sm mt-4 text-center">
-          Sudah punya akun?{' '}
-          <a href="/auth/login" className="text-blue-600 hover:underline">
-            Masuk
-          </a>
-        </p>
-      </div>
+    <div className="p-4 max-w-md mx-auto">
+      <h1 className="text-xl font-bold mb-4">Register</h1>
+      <input className="border p-2 w-full mb-2" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
+      <input className="border p-2 w-full mb-2" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" type="password" />
+      <button onClick={handleRegister} className="bg-blue-500 text-white p-2 rounded w-full">Daftar</button>
+      {message && <p className="mt-2 text-sm">{message}</p>}
     </div>
   )
 }
