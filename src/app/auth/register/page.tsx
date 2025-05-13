@@ -29,7 +29,8 @@ export default function RegisterPage() {
       setError(error.message)
     } else {
       setSuccess(true)
-      router.push('/auth/verify-email')
+      // Jangan langsung push ke dashboard, tunggu verifikasi email
+      // Bisa arahkan ke halaman informasi verifikasi jika ingin
     }
 
     setLoading(false)
@@ -38,7 +39,15 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="w-full max-w-md bg-white p-6 rounded shadow">
-        <h2 className="text-2xl font-bold mb-6 text-center">Daftar Akun</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">Daftar Akun</h2>
+
+        {success && (
+          <p className="text-green-600 text-sm text-center mb-4">
+            Link verifikasi telah dikirim ke email kamu.
+            Silakan cek inbox dan verifikasi untuk melanjutkan.
+          </p>
+        )}
+
         <form onSubmit={handleRegister} className="space-y-4">
           <input
             type="email"
