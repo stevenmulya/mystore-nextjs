@@ -13,9 +13,17 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) {
-      setError(error.message)
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+
+    if (error || !data.user) {
+      setError(error?.message || 'Gagal login')
+      return
+    }
+
+    const role = data.user.user_metadata?.role
+    if (role === 'admin') {
+      router.push('/admin')
     } else {
       router.push('/dashboard')
     }
