@@ -1,3 +1,4 @@
+// src/app/auth/register/page.tsx
 'use client'
 
 import { useState } from 'react'
@@ -29,8 +30,7 @@ export default function RegisterPage() {
       setError(error.message)
     } else {
       setSuccess(true)
-      // Jangan langsung push ke dashboard, tunggu verifikasi email
-      // Bisa arahkan ke halaman informasi verifikasi jika ingin
+      // Anda bisa arahkan ke halaman lain juga
     }
 
     setLoading(false)
