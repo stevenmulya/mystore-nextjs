@@ -2,11 +2,9 @@
 
 import { useState } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { useRouter } from 'next/navigation'
 
 export default function RegisterPage() {
   const supabase = createClientComponentClient()
-  const router = useRouter()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -31,8 +29,6 @@ export default function RegisterPage() {
       setSuccessMessage(
         'Link verifikasi telah dikirim ke email kamu. Silakan cek inbox untuk mengaktifkan akun.'
       )
-      // Anda bisa redirect nanti jika mau, misal:
-      // router.push('/auth/verify-email')
     }
 
     setLoading(false)
