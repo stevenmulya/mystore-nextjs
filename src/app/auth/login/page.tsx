@@ -10,41 +10,48 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+  const handleLogin = async () => {
+    setError(null)
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
     if (error) {
-      setError(error.message)
+      setError('Email atau password salah atau akun belum terverifikasi.')
     } else {
-      router.push('/')
+      router.push('/dashboard')
     }
   }
 
   return (
-    <div className="py-10">
-      <h1 className="text-2xl font-bold mb-6">Login</h1>
-      <form onSubmit={handleLogin} className="flex flex-col gap-4 max-w-sm">
-        {error && <p className="text-red-500">{error}</p>}
-        <input
-          type="email"
-          placeholder="Email"
-          className="border p-2 rounded"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          className="border p-2 rounded"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-        />
-        <button className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Login</button>
-        <div className="text-sm text-center">
-          Belum punya akun? <a href="/auth/register" className="text-blue-600 underline">Daftar</a><br />
-          Lupa password? <a href="/auth/forgot-password" className="text-blue-600 underline">Reset</a>
-        </div>
-      </form>
+    <div className="max-w-md mx-auto mt-10 p-4 border rounded-lg shadow">
+      <h1 className="text-2xl font-bold mb-4">Masuk</h1>
+
+      <input
+        type="email"
+        className="w-full border p-2 rounded mb-2"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <input
+        type="password"
+        className="w-full border p-2 rounded mb-2"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+
+      {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+
+      <button
+        onClick={handleLogin}
+        className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+      >
+        Login
+      </button>
     </div>
   )
 }

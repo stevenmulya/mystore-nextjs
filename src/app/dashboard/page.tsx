@@ -2,49 +2,42 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import type { User } from '@supabase/auth-helpers-nextjs'
+import { supabase } from '@/lib/supabase'
 
 export default function DashboardPage() {
-  const supabase = createClientComponentClient()
   const router = useRouter()
-
-  const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const [userEmail, setUserEmail] = useState<string | null>(null)
 
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data, error } = await supabase.auth.getUser()
 
-      if (!user) {
-        router.push('/auth/login')
-      } else if (!user.email_confirmed_at) {
-        alert('Email belum diverifikasi. Silakan cek email Anda.')
-        await supabase.auth.signOut()
+      if (error || !data.user) {
         router.push('/auth/login')
       } else {
-        setUser(user)
+        setUserEmail(data.user.email ?? null)
         setLoading(false)
       }
     }
 
     getUser()
-  }, [router, supabase])
+  }, [router])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.push('/auth/login')
   }
 
-  if (loading) return <p className="text-center mt-10">Memuat...</p>
+  if (loading) return <p className="text-center mt-10">Loading...</p>
 
   return (
-    <div className="max-w-2xl mx-auto mt-10 p-6">
-      <h1 className="text-3xl font-bold mb-4">Dashboard</h1>
-      <p>Halo, {user?.email} 👋</p>
+    <div className="max-w-md mx-auto mt-10 p-4 border rounded-lg shadow">
+      <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+      <p className="mb-4">Selamat datang, <strong>{userEmail ?? 'User'}</strong>!</p>
       <button
         onClick={handleLogout}
-        className="mt-6 bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700"
+        className="w-full bg-red-600 text-white p-2 rounded hover:bg-red-700"
       >
         Logout
       </button>
