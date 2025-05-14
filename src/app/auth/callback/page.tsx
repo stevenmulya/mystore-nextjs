@@ -1,23 +1,30 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
 export default function CallbackPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   useEffect(() => {
-    const verifyAndCreateUser = async () => {
+    const handleAuthRedirect = async () => {
+      const type = searchParams.get('type') // e.g., "signup", "recovery"
       const { data: { session } } = await supabase.auth.getSession()
 
       if (!session?.user) return
 
       const user = session.user
 
-      // Cek apakah email sudah dikonfirmasi
-      if (user.email_confirmed_at || user.confirmed_at) {
-        // Tambahkan user ke tabel `profiles` jika belum ada
+      if (type === 'recovery') {
+        router.push('/auth/reset-password')
+        return
+      }
+
+      // Verifikasi email selesai
+      if (type === 'signup' || user.email_confirmed_at || user.confirmed_at) {
+        // Tambah ke table profiles jika belum
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('*')
@@ -31,16 +38,16 @@ export default function CallbackPage() {
           })
         }
 
-        router.push('/') // Redirect ke home atau dashboard
+        router.push('/email-verified')
       }
     }
 
-    verifyAndCreateUser()
-  }, [router])
+    handleAuthRedirect()
+  }, [router, searchParams])
 
   return (
-    <div className="p-4">
-      <h1>Memverifikasi akun...</h1>
+    <div className="p-6 text-center">
+      <p className="text-lg font-medium">Memproses akun Anda...</p>
     </div>
   )
 }
