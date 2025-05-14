@@ -1,22 +1,38 @@
 'use client'
 
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 export default function CallbackContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
-
-  const type = searchParams.get('type')
+  const supabase = createClientComponentClient()
 
   useEffect(() => {
-    if (type === 'recovery') {
-      router.push('/reset-password')
+    const accessToken = searchParams.get('access_token')
+    const refreshToken = searchParams.get('refresh_token')
+    const type = searchParams.get('type')
+
+    // Jika dari forgot password (recovery), set session secara manual
+    if (type === 'recovery' && accessToken && refreshToken) {
+      supabase.auth
+        .setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        })
+        .then(() => {
+          router.push('/reset-password')
+        })
+        .catch((err) => {
+          console.error('Error setting session:', err)
+          router.push('/login')
+        })
     } else {
+      // Untuk login biasa
       router.push('/dashboard')
     }
-  }, [type, router])
+  }, [searchParams, router, supabase])
 
   return <p>Verifying your account...</p>
 }
