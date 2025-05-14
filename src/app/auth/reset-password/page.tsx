@@ -1,50 +1,47 @@
+// app/reset-password/page.tsx
 'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const router = useRouter()
+  const supabase = createClientComponentClient()
 
-  const handleReset = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-
-    const { error } = await supabase.auth.updateUser({
-      password,
-    })
-
-    setLoading(false)
-
+  const handleReset = async () => {
+    const { error } = await supabase.auth.updateUser({ password })
     if (error) {
-      alert(error.message)
+      setError(error.message)
     } else {
-      alert('Password updated successfully!')
-      router.push('/login')
+      setSuccess('Password updated. Redirecting...')
+      setTimeout(() => {
+        router.push('/auth/login')
+      }, 2000)
     }
   }
 
   return (
-    <form onSubmit={handleReset} className="max-w-md mx-auto p-6 space-y-4">
-      <h1 className="text-xl font-bold">Reset Password</h1>
+    <div className="max-w-md mx-auto mt-20">
+      <h1 className="text-xl font-bold mb-4">Reset Your Password</h1>
       <input
         type="password"
-        placeholder="New password"
+        placeholder="New Password"
+        className="border rounded w-full px-3 py-2 mb-2"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="w-full p-2 border rounded"
-        required
       />
       <button
-        type="submit"
-        className="w-full bg-blue-600 text-white p-2 rounded"
-        disabled={loading}
+        className="bg-blue-600 text-white px-4 py-2 rounded w-full"
+        onClick={handleReset}
       >
-        {loading ? 'Resetting...' : 'Reset Password'}
+        Reset Password
       </button>
-    </form>
+      {error && <p className="text-red-600 mt-2">{error}</p>}
+      {success && <p className="text-green-600 mt-2">{success}</p>}
+    </div>
   )
 }
