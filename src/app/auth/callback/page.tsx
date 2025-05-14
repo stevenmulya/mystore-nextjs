@@ -9,7 +9,7 @@ export default function CallbackPage() {
   const searchParams = useSearchParams()
 
   useEffect(() => {
-    const handleAuthRedirect = async () => {
+    const handleAuth = async () => {
       const type = searchParams.get('type')
       const { data: { session } } = await supabase.auth.getSession()
 
@@ -23,13 +23,13 @@ export default function CallbackPage() {
       }
 
       if (type === 'signup' || user.email_confirmed_at || user.confirmed_at) {
-        const { data: profile, error: profileError } = await supabase
+        const { data: profile, error } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
           .single()
 
-        if (!profile && !profileError) {
+        if (!profile && !error) {
           await supabase.from('profiles').insert({
             id: user.id,
             email: user.email
@@ -40,12 +40,8 @@ export default function CallbackPage() {
       }
     }
 
-    handleAuthRedirect()
+    handleAuth()
   }, [router, searchParams])
 
-  return (
-    <div className="p-4">
-      <h1>Memverifikasi akun...</h1>
-    </div>
-  )
+  return <div className="p-4 text-center">Verifying your account...</div>
 }
