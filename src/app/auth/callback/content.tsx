@@ -11,25 +11,35 @@ export default function CallbackPageContent() {
   useEffect(() => {
     const handleAuth = async () => {
       const type = searchParams.get('type')
-      const { data: { session } } = await supabase.auth.getSession()
+      const accessToken = searchParams.get('access_token')
 
-      if (!session?.user) return
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession()
+
+      if (error || !session?.user) {
+        console.error('Session error:', error)
+        return
+      }
 
       const user = session.user
 
+      // ✅ Recovery / Forgot Password
       if (type === 'recovery') {
         router.push('/auth/reset-password')
         return
       }
 
+      // ✅ Sign Up / Email Verified
       if (type === 'signup' || user.email_confirmed_at || user.confirmed_at) {
-        const { data: profile, error } = await supabase
+        const { data: profile } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
           .single()
 
-        if (!profile && !error) {
+        if (!profile) {
           await supabase.from('profiles').insert({
             id: user.id,
             email: user.email,

@@ -1,48 +1,50 @@
 'use client'
 
 import { useState } from 'react'
-import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [message, setMessage] = useState('')
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
 
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError('')
-    setMessage('')
+    setLoading(true)
 
-    const { error } = await supabase.auth.updateUser({ password })
+    const { error } = await supabase.auth.updateUser({
+      password,
+    })
+
+    setLoading(false)
 
     if (error) {
-      setError(error.message)
+      alert(error.message)
     } else {
-      setMessage('Password berhasil diubah. Silakan login.')
-      setTimeout(() => router.push('/auth/login'), 3000)
+      alert('Password updated successfully!')
+      router.push('/login')
     }
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form onSubmit={handleReset} className="bg-white p-6 rounded shadow-md w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4 text-center">Reset Password</h2>
-        {error && <p className="text-red-500 mb-2">{error}</p>}
-        {message && <p className="text-green-600 mb-2">{message}</p>}
-        <input
-          type="password"
-          placeholder="Password baru"
-          className="w-full mb-3 p-2 border rounded"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">
-          Ubah Password
-        </button>
-      </form>
-    </main>
+    <form onSubmit={handleReset} className="max-w-md mx-auto p-6 space-y-4">
+      <h1 className="text-xl font-bold">Reset Password</h1>
+      <input
+        type="password"
+        placeholder="New password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        className="w-full p-2 border rounded"
+        required
+      />
+      <button
+        type="submit"
+        className="w-full bg-blue-600 text-white p-2 rounded"
+        disabled={loading}
+      >
+        {loading ? 'Resetting...' : 'Reset Password'}
+      </button>
+    </form>
   )
 }
