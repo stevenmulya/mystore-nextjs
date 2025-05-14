@@ -16,6 +16,7 @@ export async function middleware(req: NextRequest) {
           res.cookies.set(name, value) // ✅ Hanya 2 argumen
         },
         remove(name: string) {
+          
           res.cookies.set(name, '') // ✅ Kosongkan value untuk menghapus
         },
       },
