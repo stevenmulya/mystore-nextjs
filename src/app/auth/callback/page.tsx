@@ -1,47 +1,15 @@
 'use client'
 
-import { useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { Suspense } from 'react'
+import CallbackPageContent from './content'
+
+// 👇 Tambahkan ini agar tidak diprerender
+export const dynamic = 'force-dynamic'
 
 export default function CallbackPage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-
-  useEffect(() => {
-    const handleAuth = async () => {
-      const type = searchParams.get('type')
-      const { data: { session } } = await supabase.auth.getSession()
-
-      if (!session?.user) return
-
-      const user = session.user
-
-      if (type === 'recovery') {
-        router.push('/auth/reset-password')
-        return
-      }
-
-      if (type === 'signup' || user.email_confirmed_at || user.confirmed_at) {
-        const { data: profile, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single()
-
-        if (!profile && !error) {
-          await supabase.from('profiles').insert({
-            id: user.id,
-            email: user.email
-          })
-        }
-
-        router.push('/email-verified')
-      }
-    }
-
-    handleAuth()
-  }, [router, searchParams])
-
-  return <div className="p-4 text-center">Verifying your account...</div>
+  return (
+    <Suspense fallback={<div className="p-4 text-center">Verifying...</div>}>
+      <CallbackPageContent />
+    </Suspense>
+  )
 }
