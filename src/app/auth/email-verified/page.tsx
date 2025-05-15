@@ -1,11 +1,12 @@
 // src/app/auth/email-verified/page.tsx
-"use client"; // Add this directive at the top
+"use client";
 
 import { useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation'; // Updated import
+import { useSearchParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { Suspense } from 'react';
 
-export default function EmailVerified() {
+function EmailVerificationContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -21,10 +22,8 @@ export default function EmailVerified() {
       .then(({ error }) => {
         if (error) {
           console.error('Verification error:', error.message);
-          // Handle error (maybe redirect to an error page)
           router.push('/auth/verification-error');
         } else {
-          // Redirect to success page
           router.push('/dashboard');
         }
       });
@@ -38,5 +37,19 @@ export default function EmailVerified() {
         <p>Please wait while we verify your email address.</p>
       </div>
     </div>
+  );
+}
+
+export default function EmailVerifiedPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <div className="max-w-md w-full p-6 bg-white rounded-lg shadow-md">
+          <h1 className="text-2xl font-bold mb-4">Loading...</h1>
+        </div>
+      </div>
+    }>
+      <EmailVerificationContent />
+    </Suspense>
   );
 }
