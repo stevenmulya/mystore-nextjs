@@ -29,9 +29,11 @@ export default function ResetPassword() {
           token_hash: token,
         });
 
-        if (error) throw error;
+        if (error) {
+          throw new Error(error.message);
+        }
         setTokenValid(true);
-      } catch (error) {
+      } catch (err) {
         setMessage({ 
           text: 'Invalid or expired token. Please request a new password reset link.',
           type: 'error'
@@ -58,16 +60,19 @@ export default function ResetPassword() {
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        throw new Error(error.message);
+      }
 
       setMessage({ 
         text: 'Password updated successfully! Redirecting to login...', 
         type: 'success' 
       });
       setTimeout(() => router.push('/auth/login'), 2000);
-    } catch (error) {
+    } catch (err) {
+      const error = err as Error;
       setMessage({ 
-        text: error instanceof Error ? error.message : 'Password reset failed',
+        text: error.message || 'Password reset failed',
         type: 'error'
       });
     } finally {
