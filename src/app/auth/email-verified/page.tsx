@@ -2,17 +2,17 @@
 "use client";
 
 import { useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { Suspense } from 'react';
 
-function EmailVerificationContent() {
+export default function EmailVerified() {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
-    const token_hash = searchParams.get('token_hash');
-    const type = searchParams.get('type');
+    // Get params from URL directly
+    const params = new URLSearchParams(window.location.search);
+    const token_hash = params.get('token_hash');
+    const type = params.get('type');
 
     if (token_hash && type === 'email') {
       supabase.auth.verifyOtp({
@@ -28,7 +28,7 @@ function EmailVerificationContent() {
         }
       });
     }
-  }, [router, searchParams]);
+  }, [router]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
@@ -37,19 +37,5 @@ function EmailVerificationContent() {
         <p>Please wait while we verify your email address.</p>
       </div>
     </div>
-  );
-}
-
-export default function EmailVerifiedPage() {
-  return (
-    <Suspense fallback={
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <div className="max-w-md w-full p-6 bg-white rounded-lg shadow-md">
-          <h1 className="text-2xl font-bold mb-4">Loading...</h1>
-        </div>
-      </div>
-    }>
-      <EmailVerificationContent />
-    </Suspense>
   );
 }
