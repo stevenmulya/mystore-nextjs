@@ -23,22 +23,19 @@ export default function ResetPassword() {
     }
 
     const verifyToken = async () => {
-      try {
-        const { error } = await supabase.auth.verifyOtp({
-          type: 'recovery',
-          token_hash: token,
-        });
+      const { error } = await supabase.auth.verifyOtp({
+        type: 'recovery',
+        token_hash: token,
+      });
 
-        if (error) {
-          throw new Error(error.message);
-        }
-        setTokenValid(true);
-      } catch (err) {
+      if (error) {
         setMessage({ 
           text: 'Invalid or expired token. Please request a new password reset link.',
           type: 'error'
         });
+        return;
       }
+      setTokenValid(true);
     };
 
     verifyToken();
@@ -55,29 +52,25 @@ export default function ResetPassword() {
       return;
     }
 
-    try {
-      const { error } = await supabase.auth.updateUser({
-        password,
-      });
+    const { error } = await supabase.auth.updateUser({
+      password,
+    });
 
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      setMessage({ 
-        text: 'Password updated successfully! Redirecting to login...', 
-        type: 'success' 
-      });
-      setTimeout(() => router.push('/auth/login'), 2000);
-    } catch (err) {
-      const error = err as Error;
+    if (error) {
       setMessage({ 
         text: error.message || 'Password reset failed',
         type: 'error'
       });
-    } finally {
       setLoading(false);
+      return;
     }
+
+    setMessage({ 
+      text: 'Password updated successfully! Redirecting to login...', 
+      type: 'success' 
+    });
+    setTimeout(() => router.push('/auth/login'), 2000);
+    setLoading(false);
   };
 
   return (
