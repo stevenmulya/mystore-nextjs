@@ -10,6 +10,7 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [address, setAddress] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -78,6 +79,7 @@ export default function RegisterPage() {
           className="w-full border p-2 rounded"
         />
 
+        {/* Password */}
         <div className="relative">
           <input
             type={showPassword ? 'text' : 'password'}
@@ -91,20 +93,33 @@ export default function RegisterPage() {
             type="button"
             onClick={() => setShowPassword(!showPassword)}
             className="absolute inset-y-0 right-2 px-2 text-sm text-gray-600"
+            tabIndex={-1}
           >
             {showPassword ? '🙈' : '👁️'}
           </button>
         </div>
 
-        <input
-          type="password"
-          placeholder="Konfirmasi Password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-          className="w-full border p-2 rounded"
-        />
+        {/* Konfirmasi Password */}
+        <div className="relative">
+          <input
+            type={showConfirmPassword ? 'text' : 'password'}
+            placeholder="Konfirmasi Password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            className="w-full border p-2 rounded pr-10"
+          />
+          <button
+            type="button"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            className="absolute inset-y-0 right-2 px-2 text-sm text-gray-600"
+            tabIndex={-1}
+          >
+            {showConfirmPassword ? '🙈' : '👁️'}
+          </button>
+        </div>
 
+        {/* Alamat */}
         <input
           type="text"
           placeholder="Alamat"
