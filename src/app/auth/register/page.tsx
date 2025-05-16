@@ -8,6 +8,8 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [address, setAddress] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -35,6 +37,11 @@ export default function RegisterPage() {
     const { error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          address, // menyimpan alamat di user metadata
+        },
+      },
     })
 
     if (error) {
@@ -70,19 +77,39 @@ export default function RegisterPage() {
           required
           className="w-full border p-2 rounded"
         />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="w-full border p-2 rounded"
-        />
+
+        <div className="relative">
+          <input
+            type={showPassword ? 'text' : 'password'}
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="w-full border p-2 rounded pr-10"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute inset-y-0 right-2 px-2 text-sm text-gray-600"
+          >
+            {showPassword ? '🙈' : '👁️'}
+          </button>
+        </div>
+
         <input
           type="password"
           placeholder="Konfirmasi Password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+          className="w-full border p-2 rounded"
+        />
+
+        <input
+          type="text"
+          placeholder="Alamat"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
           required
           className="w-full border p-2 rounded"
         />
