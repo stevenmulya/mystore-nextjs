@@ -8,6 +8,9 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [name, setName] = useState('')
+  const [birthDate, setBirthDate] = useState('')
+  const [phone, setPhone] = useState('')
   const [address, setAddress] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -40,6 +43,9 @@ export default function RegisterPage() {
       password,
       options: {
         data: {
+          name,
+          birthDate,
+          phone,
           address,
         },
       },
@@ -70,6 +76,43 @@ export default function RegisterPage() {
     <div className="max-w-md mx-auto mt-10 p-6 border rounded shadow">
       <h1 className="text-2xl font-bold mb-4 text-center">Daftar Akun</h1>
       <form onSubmit={handleRegister} className="space-y-4">
+
+        <input
+          type="text"
+          placeholder="Nama Lengkap"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+          className="w-full border p-2 rounded"
+        />
+
+        <input
+          type="date"
+          placeholder="Tanggal Lahir"
+          value={birthDate}
+          onChange={(e) => setBirthDate(e.target.value)}
+          required
+          className="w-full border p-2 rounded"
+        />
+
+        <input
+          type="tel"
+          placeholder="Nomor Telepon"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          required
+          className="w-full border p-2 rounded"
+        />
+
+        <input
+          type="text"
+          placeholder="Alamat"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          required
+          className="w-full border p-2 rounded"
+        />
+
         <input
           type="email"
           placeholder="Email"
@@ -118,16 +161,6 @@ export default function RegisterPage() {
             {showConfirmPassword ? 'Hide' : 'Show'}
           </button>
         </div>
-
-        {/* Alamat */}
-        <input
-          type="text"
-          placeholder="Alamat"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          required
-          className="w-full border p-2 rounded"
-        />
 
         <p className="text-sm text-gray-600">
           * Password minimal 8 karakter dan harus mengandung huruf, angka, serta simbol.
