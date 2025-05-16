@@ -40,7 +40,7 @@ export default function RegisterPage() {
       password,
       options: {
         data: {
-          address, // menyimpan alamat di user metadata
+          address,
         },
       },
     })
@@ -87,15 +87,15 @@ export default function RegisterPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full border p-2 rounded pr-10"
+            className="w-full border p-2 rounded pr-20"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute inset-y-0 right-2 px-2 text-sm text-gray-600"
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-blue-600"
             tabIndex={-1}
           >
-            {showPassword ? '🙈' : '👁️'}
+            {showPassword ? 'Hide' : 'Show'}
           </button>
         </div>
 
@@ -107,15 +107,15 @@ export default function RegisterPage() {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
-            className="w-full border p-2 rounded pr-10"
+            className="w-full border p-2 rounded pr-20"
           />
           <button
             type="button"
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="absolute inset-y-0 right-2 px-2 text-sm text-gray-600"
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-blue-600"
             tabIndex={-1}
           >
-            {showConfirmPassword ? '🙈' : '👁️'}
+            {showConfirmPassword ? 'Hide' : 'Show'}
           </button>
         </div>
 
